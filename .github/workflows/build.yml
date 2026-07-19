@@ -1,0 +1,36 @@
+name: Build Windows EXE
+
+# 當有程式碼推送到 main 分支時，觸發此動作
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    # 租用一台最新的 Windows 雲端主機
+    runs-on: windows-latest
+
+    steps:
+    # 步驟 1: 取得你的程式碼
+    - uses: actions/checkout@v4
+    
+    # 步驟 2: 安裝 Python 環境
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        
+    # 步驟 3: 安裝 PyInstaller (負責將 Python 轉為 exe 的套件)
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+      
+    # 步驟 4: 執行打包指令 (--onefile 代表打包成單一乾淨的 .exe 檔)
+    - name: Build EXE
+      run: pyinstaller --onefile search.py
+      
+    # 步驟 5: 將打包好的 .exe 檔上傳，讓你可以在網頁上下載
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: StudentSearchTool
+        path: dist/search.exe
